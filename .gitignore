@@ -1,3 +1,9 @@
+# gitignore template for Python projects provided by GitHub
+
+# create_config.py
+src/create_config.py
+*.ini
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
