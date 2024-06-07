@@ -1,15 +1,24 @@
 import flask
 import logging
-import psycopg2
-import jwt
-import secrets
-from read_config import read_config
 from globals import config_vars
 from login import login
 from register import register
 from send_message import send_message
 
 app = flask.Flask(__name__)
+
+# This function is an error handler for HTTP status codes 404 (Not Found) and 400 (Bad Request).
+# When a request is made to an invalid endpoint or a bad request is encountered,
+# this function generates a JSON response with the error details.
+@app.errorhandler(404)
+@app.errorhandler(400)
+def error_handler(error):
+    response = {
+        'status': error.code,
+        'errors': error.name,
+        'results': None
+    }
+    return flask.jsonify(response)  
 
 @app.route('/mail/register', methods=['POST'])
 def register_endpoint():
