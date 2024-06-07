@@ -6,6 +6,7 @@ from register import register
 from send_message import send_message
 from filter_messages import filter_messages
 from update_message import update_message
+from delete_message import delete_message
 
 app = flask.Flask(__name__)
 
@@ -54,6 +55,10 @@ def update_message_endpoint(message_id):
     response = update_message(message_id)
     return flask.jsonify(response)
 
+@app.route('/mail/delete/<message_id>', methods=['DELETE'])
+def delete_message_endpoint(message_id):
+    response = delete_message(message_id)
+    return flask.jsonify(response)
 
 if __name__ == '__main__':
     if config_vars['log']:

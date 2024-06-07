@@ -6,7 +6,7 @@ from globals import status_codes, config_vars
 from db_connection import db_connection
 from validate_token import validate_token
 
-def update_message(message_id: str):
+def delete_message(message_id: str):
     logger.info(f'DELETE /mail/delete/{message_id}')
 
     payload = flask.request.get_json()
@@ -30,9 +30,38 @@ def update_message(message_id: str):
 
     conn = db_connection(config_vars)
     cur = conn.cursor()
-    
-    try:
 
+    # Query to verify if the user is the receiver of the message
+    statement = """
+        SELECT r.user_id
+        FROM receivers AS r
+        JOIN receivers_messages AS rm ON r.receiver_id = rm.receiver_id
+        JOIN messages AS m ON m.msg_id = rm.msg_id
+        WHERE m.msg_id = %s;
+    """
+    values = (message_id,)
+
+    try:
+        cur.execute(statement, values)
+
+        result = cur.fetchone()
+        if result is None:
+            raise Exception('Message not found')
+        
+        if result[0] != jwt_token['user_id']:
+            raise Exception('Unauthorized')
+
+        # Query to delete the message
+        statement = """
+            DELETE FROM messages
+            WHERE msg_id = %s;
+        """
+        values = (message_id,)
+        cur.execute(statement, values)
+
+        conn.commit()
+
+        response = {'status': status_codes['success'], 'errors': None, 'results': 'Message deleted'}
 
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(f'DELETE /mail/delete/{message_id} - error: {error}')
