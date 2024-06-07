@@ -1,7 +1,7 @@
 import logging as logger
 import flask
 import psycopg2
-from globals import status_codes
+from globals import status_codes, config_vars
 from validate_token import validate_token
 from db_connection import db_connection
 
@@ -41,7 +41,7 @@ def send_message():
     # SQL query 
     #
 
-    conn = db_connection()
+    conn = db_connection(config_vars)
     cur = conn.cursor()
 
     try:
