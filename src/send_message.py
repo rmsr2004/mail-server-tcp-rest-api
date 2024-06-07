@@ -74,7 +74,7 @@ def send_message():
         # Queries to associate message with receiver
         for receiver_id in receivers_ids:
             statement = """
-                INSERT INTO message_receivers(msg_id, receiver_id) VALUES (%s, %s);
+                INSERT INTO message_receivers(msg_id, user_id) VALUES (%s, %s);
             """
             values = (message_id, receiver_id)
 
