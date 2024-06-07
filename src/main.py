@@ -22,15 +22,17 @@ def login_endpoint():
     response = login()
     return flask.jsonify(response)
 
-@app.route('/mail/send/<receiver_email>', methods=['POST'])
-def send_message_endpoint(receiver_email):
-    response = send_message(receiver_email)
+@app.route('/mail/send', methods=['POST'])
+def send_message_endpoint():
+    response = send_message()
     return flask.jsonify(response)
 
 @app.route('/mail/filter/<filter>', methods=['GET'])
 def filter_messages_endpoint(filter):
     response = None
     return flask.jsonify(response)
+
+
 
 if __name__ == '__main__':
     if config_vars['log']:

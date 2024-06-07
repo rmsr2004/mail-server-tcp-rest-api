@@ -5,12 +5,12 @@ from globals import status_codes
 from validate_token import validate_token
 from db_connection import db_connection
 
-def send_message(receiver_email):
-    logger.info(f'POST /email/send/{receiver_email}')
+def send_message():
+    logger.info('POST /email/send')
 
     payload = flask.request.get_json()
 
-    logger.debug(f'POST /email/send/{receiver_email} - payload: {payload}')
+    logger.debug(f'POST /email/send - payload: {payload}')
 
     #
     # Validate Authorization header
@@ -27,35 +27,43 @@ def send_message(receiver_email):
     # Validate payload.
     #
 
-    required_fields = ['subject', 'content']
+    required_fields = ['receivers', 'subject', 'content']
     for field in required_fields:
         if field not in payload:
             response = {'status': status_codes['api_error'], 'errors': f'{field} value required'}
             return response
 
+    receivers = payload['receivers']
+    if receivers == []:
+        response = {'status': status_codes['api_error'], 'errors': 'receivers emails required'}
+        return response
     #
     # SQL query 
     #
 
     conn = db_connection()
     cur = conn.cursor()
-    
-    # Query to verify if the receiver_email exists in the database
-    statement =  """
-        SELECT id FROM users WHERE email = %s;
-    """
-    values = (receiver_email, )
 
     try:
-        cur.execute(statement, values)
-        receiver_id = cur.fetchone()[0]
+        # Queries to verify if the receivers emails exists in the database
+        receivers_ids = []
+        for receiver_email in receivers:
+            statement = """
+                SELECT user_id FROM users WHERE email = %s;
+            """
+            values = (receiver_email,)
 
-        if receiver_id is None:
-            raise Exception(f'User with email {receiver_email} not found')
-        
+            cur.execute(statement, values)
+            receiver_id = cur.fetchone()
+
+            if receiver_id is None:
+                raise Exception(f"Receiver email {receiver_email} not found")
+
+            receivers_ids.append(receiver_id[0])
+            
         # Query to insert the message into the database
         statement = """
-            INSERT INTO messages(msg_date, subject, content, msg_type, user_id) VALUES (CURRENT_DATE, %s, %s, 1, %s)
+            INSERT INTO messages(msg_date, subject, content, user_id) VALUES (CURRENT_DATE, %s, %s, %s)
             RETURNING msg_id;
         """
         values = (payload['subject'], payload['content'], jwt_token['id'])
@@ -63,14 +71,14 @@ def send_message(receiver_email):
         cur.execute(statement, values)
         message_id = cur.fetchone()[0]
 
-        # Query to associate message with receiver
-        statement = """
-            INSERT INTO message_receivers(msg_id, receiver_id) VALUES (%s, %s)
-            ON CONFLICT DO NOTHING;
-        """
-        values = (message_id, receiver_id)
+        # Queries to associate message with receiver
+        for receiver_id in receivers_ids:
+            statement = """
+                INSERT INTO message_receivers(msg_id, receiver_id) VALUES (%s, %s);
+            """
+            values = (message_id, receiver_id)
 
-        cur.execute(statement, values)
+            cur.execute(statement, values)
 
         response = {'status': status_codes['success'], 'results': message_id}
 
@@ -80,7 +88,7 @@ def send_message(receiver_email):
         # an error occurred, rollback
         conn.rollback()
 
-        logger.error(f'POST /email/send/{receiver_email} - error: {error}')
+        logger.error(f'POST /email/send - error: {error}')
 
         error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': error, 'results': None}
