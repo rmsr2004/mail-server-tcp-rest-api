@@ -2,7 +2,7 @@ import logging as logger
 import jwt
 import psycopg2
 import flask
-from globals import status_codes, secret_key
+from globals import status_codes, secret_key, config_vars
 from db_connection import db_connection 
 
 def login():
@@ -27,7 +27,7 @@ def login():
     # SQL query
     #
 
-    conn = db_connection()
+    conn = db_connection(config_vars)
     cur = conn.cursor()
     
     statement =  """

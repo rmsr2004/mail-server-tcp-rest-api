@@ -17,8 +17,8 @@ def read_config():
 
 	# Return a dictionary with the retrieved values
 	config_values = {
-		'debug_mode': debug_mode,
-		'log_level': log_level,
+		'debug': debug_mode,
+		'log': log_level,
 		'db_name': db_name,
 		'db_host': db_host,
 		'db_port': db_port,

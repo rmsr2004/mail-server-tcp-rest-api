@@ -1,7 +1,7 @@
 import logging as logger
 import psycopg2
 import flask
-from globals import status_codes
+from globals import status_codes, config_vars
 from db_connection import db_connection
 
 def register():
@@ -25,7 +25,7 @@ def register():
     # SQL Query
     #
 
-    conn = db_connection()
+    conn = db_connection(config_vars)
     cur = conn.cursor()
 
     # query to insert the user
