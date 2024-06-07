@@ -20,7 +20,7 @@ def send_message():
     
     jwt_token = validate_token(jwt_token)
     if isinstance(jwt_token, str):
-        response = {'status': status_codes['api_error'], 'errors': jwt_token}
+        response = {'status': status_codes['api_error'], 'errors': jwt_token, 'results': None}
         return response
     
     #
@@ -30,12 +30,12 @@ def send_message():
     required_fields = ['receivers', 'subject', 'content']
     for field in required_fields:
         if field not in payload:
-            response = {'status': status_codes['api_error'], 'errors': f'{field} value required'}
+            response = {'status': status_codes['api_error'], 'errors': f'{field} value required', 'results': None}
             return response
 
     receivers = payload['receivers']
     if receivers == []:
-        response = {'status': status_codes['api_error'], 'errors': 'receivers emails required'}
+        response = {'status': status_codes['api_error'], 'errors': 'receivers emails required', 'results': None}
         return response
     #
     # SQL query 
@@ -80,7 +80,7 @@ def send_message():
 
             cur.execute(statement, values)
 
-        response = {'status': status_codes['success'], 'results': message_id}
+        response = {'status': status_codes['success'], 'errors': None, 'results': message_id}
 
         conn.commit()
 

@@ -18,7 +18,7 @@ def register():
     required_fields = ['name', 'email', 'password']
     for field in required_fields:
         if field not in payload:
-            response = {'status': status_codes['api_error'], 'errors': f'{field} required'}
+            response = {'status': status_codes['api_error'], 'errors': f'{field} required', 'results': None}
             return response
 
     #
@@ -42,7 +42,7 @@ def register():
         if user_id is None:
             raise Exception('Error inserting user!')
         
-        response = {'status': status_codes['success'], 'results': user_id}
+        response = {'status': status_codes['success'], 'errors': None, 'results': user_id}
 
         conn.commit()
 
@@ -53,7 +53,7 @@ def register():
         logger.error(f'POST /mail/register - error: {error}')
 
         error = str(error).split('\n')[0]
-        response = {'status': status_codes['internal_error'], 'errors': str(error)}
+        response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}
 
     finally:
         if conn is not None:

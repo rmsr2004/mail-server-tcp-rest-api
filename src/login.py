@@ -17,10 +17,10 @@ def login():
     #
 
     if 'email' not in payload:
-        response = {'status': status_codes['api_error'], 'errors': 'email is required!'}
+        response = {'status': status_codes['api_error'], 'errors': 'email is required!', 'results': None}
         return response
     if 'password' not in payload:
-        response = {'status': status_codes['api_error'], 'errors': 'password is required!'}
+        response = {'status': status_codes['api_error'], 'errors': 'password is required!', 'results': None}
         return response
     
     #
@@ -54,7 +54,7 @@ def login():
 
             logger.debug(f'PUT /mail/login - user {user_id} logged in')
             
-            response = {'status': status_codes['success'], 'results': jwt_token}
+            response = {'status': status_codes['success'], 'errors': None, 'results': jwt_token}
 
             conn.commit()
         else:
