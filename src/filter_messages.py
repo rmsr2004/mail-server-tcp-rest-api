@@ -17,7 +17,7 @@ def filter_messages(filter: str):
     #   Validate filter
     #
 
-    filters = ['draft', 'sent', 'read', 'replied', 'deleted', 'trashed', 'received']
+    filters = ['draft', 'sent', 'read', 'replied', 'trashed', 'received']
     if filter not in filters:
         response = {'status': status_codes['api_error'], 'errors': 'Invalid filter', 'results': None}
         return response
@@ -72,15 +72,6 @@ def filter_messages(filter: str):
             JOIN messages AS m ON m.msg_id = rm.msg_id
             JOIN receivers AS r ON r.msg_id = m.msg_id
             WHERE rm.user_id = %s AND r.is_replied = TRUE
-            ORDER BY m.msg_date DESC;
-        """
-    elif filter == 'deleted':
-        statement = """
-            SELECT m.msg_date, m.subject, m.content
-            FROM receivers_messages AS rm
-            JOIN messages AS m ON m.msg_id = rm.msg_id
-            JOIN receivers AS r ON r.msg_id = m.msg_id
-            WHERE rm.user_id = %s AND r.is_deleted = TRUE
             ORDER BY m.msg_date DESC;
         """
     elif filter == 'trashed':
