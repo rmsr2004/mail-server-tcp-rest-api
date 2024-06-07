@@ -100,7 +100,7 @@ def filter_messages(filter: str):
         if result:
             response = {'status': status_codes['success'], 'errors': None, 'results': result}
         else:
-            response = {'status': status_codes['not_found'], 'errors': 'No messages found', 'results': None}
+            raise Exception('No messages found')
 
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(f'GET /mail/filter/{filter} - error: {error}')

@@ -5,6 +5,7 @@ from login import login
 from register import register
 from send_message import send_message
 from filter_messages import filter_messages
+from update_message import update_message
 
 app = flask.Flask(__name__)
 
@@ -21,7 +22,7 @@ def error_handler(error):
         'errors': error.name,
         'results': None
     }
-    return flask.jsonify(response)  
+    return flask.jsonify(response)
 
 @app.route('/mail/register', methods=['POST'])
 def register_endpoint():
@@ -46,6 +47,11 @@ def home_messages_endpoint():
 @app.route('/mail/filter/<filter>', methods=['GET'])
 def filter_messages_endpoint(filter):
     response = filter_messages(filter)
+    return flask.jsonify(response)
+
+@app.route('/mail/update/<message_id>', methods=['PUT'])
+def update_message_endpoint(message_id):
+    response = update_message(message_id)
     return flask.jsonify(response)
 
 
