@@ -111,6 +111,8 @@ def update_message(message_id: str):
                 values = (message_id, jwt_token['user_id'])
                 cur.execute(statement, values)
 
+            conn.commit()
+            
             response = {'status': status_codes['success'], 'errors': None, 'results': 'Message updated'}
 
     except (Exception, psycopg2.DatabaseError) as error:
