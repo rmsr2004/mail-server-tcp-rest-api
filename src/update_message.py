@@ -14,8 +14,11 @@ def update_message(message_id: str):
     logger.debug(f'PUT /mail/update/{message_id} - payload: {payload}')
 
     #
-    #   Validate detail
+    #   Validate payload
     #
+
+    # list to store errors
+    errors = []
 
     if 'details' not in payload:
         response = {'status': status_codes['api_error'], 'errors': 'Details not found', 'results': None}
@@ -24,8 +27,11 @@ def update_message(message_id: str):
     details = ['sent', 'read', 'replied', 'trashed']
     for detail in payload['details']:
         if detail not in details:
-            response = {'status': status_codes['api_error'], 'errors': 'Invalid detail to udpdate', 'results': None}
-            return response
+            errors.append(f'{detail} is not a valid detail\n')
+
+    if errors != []:
+        response = {'status': status_codes['api_error'], 'errors': " ".join(errors), 'results': None}
+        return response
     
     #
     # Validate Authorization header

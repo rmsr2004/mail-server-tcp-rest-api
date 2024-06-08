@@ -27,11 +27,17 @@ def send_message():
     # Validate payload.
     #
 
+    # list to store errors
+    errors = []
+
     required_fields = ['receivers', 'subject', 'content']
     for field in required_fields:
         if field not in payload:
-            response = {'status': status_codes['api_error'], 'errors': f'{field} value required', 'results': None}
-            return response
+            errors.append(f'{field} required\n')
+    
+    if errors != []:
+        response = {'status': status_codes['api_error'], 'errors': " ".join(errors), 'results': None}
+        return response
 
     receivers = payload['receivers']
     if receivers == []:

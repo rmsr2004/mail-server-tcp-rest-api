@@ -15,11 +15,17 @@ def register():
     # Validate payload.
     #
 
+    # list to store errors
+    errors = []
+
     required_fields = ['name', 'email', 'password']
     for field in required_fields:
         if field not in payload:
-            response = {'status': status_codes['api_error'], 'errors': f'{field} required', 'results': None}
-            return response
+            errors.append(f'{field} required\n')
+
+    if errors != []:
+        response = {'status': status_codes['bad_request'], 'errors': " ".join(errors), 'results': None}
+        return response
 
     #
     # SQL Query
