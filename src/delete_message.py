@@ -20,7 +20,7 @@ def delete_message(message_id: str):
     jwt_token = flask.request.headers.get('Authorization')
     
     jwt_token = validate_token(jwt_token)
-    if isinstance(jwt_token, str):
+    if isinstance(jwt_token, str): 
         response = {'status': status_codes['api_error'], 'errors': jwt_token, 'results': None}
         return response
     
@@ -37,7 +37,7 @@ def delete_message(message_id: str):
         FROM receivers AS r
         JOIN receivers_messages AS rm ON r.receiver_id = rm.receiver_id
         JOIN messages AS m ON m.msg_id = rm.msg_id
-        WHERE m.msg_id = %s;
+        WHERE m.msg_id = %s AND r.trashed = TRUE;
     """
     values = (message_id,)
 
@@ -51,9 +51,13 @@ def delete_message(message_id: str):
         if result[0] != jwt_token['user_id']:
             raise Exception('Unauthorized')
 
-        # Query to delete the message
+        # Query to delete the message from messages table
+        # and the receivers_messages table
         statement = """
             DELETE FROM messages
+            WHERE msg_id = %s;
+            
+            DELETE FROM receivers_messages
             WHERE msg_id = %s;
         """
         values = (message_id,)
@@ -64,8 +68,12 @@ def delete_message(message_id: str):
         response = {'status': status_codes['success'], 'errors': None, 'results': 'Message deleted'}
 
     except (Exception, psycopg2.DatabaseError) as error:
-        logger.error(f'DELETE /mail/delete/{message_id} - error: {error}')
+        # an error occurred
+        conn.rollback()
 
+        logger.error(f'DELETE /mail/delete/{message_id} - error: {error}')
+        
+        error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}
 
     finally:
