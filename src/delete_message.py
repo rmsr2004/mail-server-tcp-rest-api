@@ -1,8 +1,7 @@
-import logging as logger
 import jwt
 import psycopg2
 import flask
-from globals import status_codes, config_vars
+from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
 

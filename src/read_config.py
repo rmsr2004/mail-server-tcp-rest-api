@@ -4,7 +4,7 @@ def read_config():
 	config = configparser.ConfigParser()
 
 	# Read the configuration file
-	config.read('config.ini')
+	config.read('../config.ini')
 
 	# Access values from the configuration file
 	debug_mode = config.getboolean('General', 'debug')

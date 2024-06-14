@@ -1,7 +1,6 @@
-import logging as logger
 import psycopg2
 import flask
-from globals import status_codes, config_vars
+from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 
 def register():
@@ -36,7 +35,7 @@ def register():
 
     # query to insert the user
     statement = """
-        INSERT INTO users (name, email, password) VALUES (%s, %s, encrypt(%s, 'my_secret_key'))
+        INSERT INTO users (name, email, password) VALUES (%s, %s, %s)
         RETURNING user_id;
     """
     values = (payload['name'], payload['email'], payload['password'])

@@ -1,8 +1,7 @@
-import logging as logger
 import jwt
 import psycopg2
 import flask
-from globals import status_codes, secret_key, config_vars
+from globals import status_codes, secret_key, config_vars, logger
 from db_connection import db_connection 
 
 def login():
@@ -31,11 +30,11 @@ def login():
     cur = conn.cursor()
     
     statement =  """
-        SELECT user_id, decrypt(password, 'my_secret_key') AS decrypted_password
+        SELECT user_id, password AS decrypted_password
         FROM users
         WHERE email = %s;
     """
-    values = (payload['username'], payload['username'])
+    values = (payload['email'],)
 
     try:
         cur.execute(statement, values)

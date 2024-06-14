@@ -1,5 +1,6 @@
 import secrets
 from read_config import read_config
+import logging
 
 secret_key = secrets.token_hex(64)  # Generate a random secret key to encode/decode JWT tokens
 
@@ -11,3 +12,6 @@ status_codes = {
 } # Status codes for the API
 
 config_vars = read_config()  # Read the configuration file
+
+logging.basicConfig(filename='log_file.log')
+logger = logging.getLogger('logger')

@@ -1,6 +1,6 @@
 import flask
 import logging
-from globals import config_vars
+from globals import config_vars, logger
 from login import login
 from register import register
 from send_message import send_message
@@ -61,26 +61,19 @@ def delete_message_endpoint(message_id):
     return flask.jsonify(response)
 
 if __name__ == '__main__':
-    if config_vars['log']:
-        logging.basicConfig(filename='log_file.log')
-    
+    # set up logging
+    logging.basicConfig(filename='log_file.log')
     logger = logging.getLogger('logger')
-
+    logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
-    
-    if config_vars['debug']:
-        logger.setLevel(logging.DEBUG)
-        ch.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-        ch.setLevel(logging.INFO)
-    
+    ch.setLevel(logging.DEBUG)
+
+    # create formatter
     formatter = logging.Formatter('%(asctime)s [%(levelname)s]:  %(message)s', '%H:%M:%S')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
     host = '127.0.0.1'
     port = 8080
-
+    app.run(host=host, debug=True, threaded=True, port=port)
     logger.info(f'API v1.0 online: http://{host}:{port}')
-    app.run(host=host, debug=config_vars['debug'], threaded=True, port=port)

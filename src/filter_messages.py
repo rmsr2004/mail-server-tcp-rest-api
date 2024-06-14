@@ -1,17 +1,12 @@
-import logging as logger
 import jwt
 import psycopg2
 import flask
-from globals import status_codes, config_vars
+from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
 
 def filter_messages(filter: str):
     logger.info(f'GET /mail/filter/{filter}')
-
-    payload = flask.request.get_json()
-
-    logger.debug(f'GET /mail/filter/{filter} - payload: {payload}')
 
     #
     #   Validate filter
@@ -21,7 +16,6 @@ def filter_messages(filter: str):
     if filter not in filters:
         response = {'status': status_codes['api_error'], 'errors': 'Invalid filter', 'results': None}
         return response
-    
 
     #
     # Validate Authorization header
@@ -54,7 +48,7 @@ def filter_messages(filter: str):
             SELECT msg_date, subject, content
             FROM messages
             WHERE is_draft = FALSE AND user_id = %s
-            ORDER BY m.msg_date DESC;
+            ORDER BY msg_date DESC;
         """
     elif filter == 'read':
         statement = """
@@ -85,10 +79,11 @@ def filter_messages(filter: str):
         """
     elif filter == 'received':
         statement = """
-            SELECT m.msg_date, m.subject, m.content
-            FROM receivers_messages AS rm
-            JOIN messages AS m ON m.msg_id = rm.msg_id
-            WHERE rm.user_id = %s
+            SELECT m.msg_date, m.subject, m.content, u.email
+            FROM messages_receivers AS mr
+            JOIN messages AS m ON m.msg_id = mr.msg_id
+            JOIN users AS u ON u.user_id = m.user_id
+            WHERE mr.receiver_id = %s
             ORDER BY m.msg_date DESC;
         """
     values = (jwt_token['user_id'],)
@@ -98,7 +93,15 @@ def filter_messages(filter: str):
 
         result = cur.fetchall()
         if result:
-            response = {'status': status_codes['success'], 'errors': None, 'results': result}
+            results = []
+            for row in result:
+                results.append({
+                    'date': row[0],
+                    'subject': row[1],
+                    'content': row[2],
+                    'sender': row[3]
+                })
+            response = {'status': status_codes['success'], 'errors': None, 'results': results}
         else:
             raise Exception('No messages found')
 
