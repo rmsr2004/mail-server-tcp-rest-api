@@ -79,41 +79,43 @@ def update_message(message_id: str):
             else:
                 # Query to check if the user is the recipient of the message
                 statement = """
-                    SELECT r.user_id
-                    FROM receivers_messages AS rm
-                    JOIN receivers AS r ON r.receiver_id = rm.receiver_id
-                    WHERE msg_id = %s AND r.user_id = %s;
+                    SELECT mu.user_id
+                    FROM messages_users AS mu
+                    JOIN users AS u ON u.user_id = mu.user_id
+                    WHERE mu.msg_id = %s AND mu.user_id = %s;
                 """
                 values = (message_id, jwt_token['user_id'])
                 cur.execute(statement, values)
 
-                result = cur.fetchone()[0];
+                result = cur.fetchone();
                 if not result:
                     raise Exception('Message not found')
                 if result != jwt_token['user_id']:
                     raise Exception('Unauthorized')
                 
+                receiver_id = result[1]
+                
                 if detail == 'read':
                     # Query to update the message as read
                     statement = """
-                        UPDATE receivers
+                        UPDATE details
                         SET is_read = NOT is_read
-                        WHERE msg_id = %s AND user_id = %s;
+                        WHERE user_id = %s AND msg_id = %s;
                     """
                 elif detail == 'replied':
                     statement = """
-                        UPDATE receivers
+                        UPDATE details
                         SET is_replied = NOT is_replied
-                        WHERE msg_id = %s AND user_id = %s;
+                        WHERE user_id = %s AND msg_id = %s;
                     """
                 elif detail == 'trashed':
                     statement = """
-                        UPDATE receivers
+                        UPDATE details
                         SET is_trashed = NOT is_trashed
-                        WHERE msg_id = %s AND user_id = %s;
+                        WHERE user_id = %s AND msg_id = %s;
                     """
 
-                values = (message_id, jwt_token['user_id'])
+                values = (receiver_id, message_id)
                 cur.execute(statement, values)
 
             conn.commit()
@@ -121,9 +123,13 @@ def update_message(message_id: str):
             response = {'status': status_codes['success'], 'errors': None, 'results': 'Message updated'}
 
     except (Exception, psycopg2.DatabaseError) as error:
-        logger.error(f'PUT /mail/update/{message_id} - error: {error}')
+        # an error occurred, rollback
+        conn.rollback()
 
-        response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}
+        logger.error(f'PUT /email/update/{message_id} - error: {error}')
+
+        error = str(error).split('\n')[0]
+        response = {'status': status_codes['internal_error'], 'errors': error, 'results': None}
 
     finally:
         if conn is not None:

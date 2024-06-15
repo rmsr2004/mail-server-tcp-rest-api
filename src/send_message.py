@@ -80,21 +80,11 @@ def send_message():
         # Queries to associate message with receiver
         for receiver_id in receivers_ids:
             statement = """
-                SELECT receiver_id 
-                FROM receivers 
-                WHERE user_id = %s;
+                INSERT INTO messages_users (msg_id, user_id) VALUES (%s, %s);
+                INSERT INTO details (msg_id, user_id) VALUES (%s, %s);
             """
-            values = (receiver_id,)
+            values = (message_id, receiver_id, message_id, receiver_id)
             cur.execute(statement, values)
-
-            receiver_id = cur.fetchone()[0]
-
-            statement = """
-                INSERT INTO messages_receivers(msg_id, receiver_id) VALUES (%s, %s);
-            """
-            values = (message_id, receiver_id)
-            cur.execute(statement, values)
-
 
         response = {'status': status_codes['success'], 'errors': None, 'results': message_id}
 

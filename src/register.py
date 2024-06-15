@@ -23,7 +23,7 @@ def register():
             errors.append(f'{field} required\n')
 
     if errors != []:
-        response = {'status': status_codes['bad_request'], 'errors': " ".join(errors), 'results': None}
+        response = {'status': status_codes['api_error'], 'errors': "\n".join(errors), 'results': None}
         return response
 
     #

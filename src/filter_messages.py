@@ -38,52 +38,59 @@ def filter_messages(filter: str):
     
     if filter == 'draft':
         statement = """
-            SELECT msg_date, subject, content
-            FROM messages
-            WHERE is_draft = TRUE AND user_id = %s
-            ORDER BY m.msg_date DESC;
+            SELECT m.msg_date, m.subject, m.content, u.email
+            FROM messages AS m
+            JOIN messages_users AS mu ON m.msg_id = mu.msg_id
+            JOIN users AS u ON u.user_id = mu.user_id
+            WHERE m.is_draft = TRUE AND m.user_id = %s
+            ORDER BY msg_date DESC;
         """
     elif filter == 'sent':
         statement = """
-            SELECT msg_date, subject, content
-            FROM messages
-            WHERE is_draft = FALSE AND user_id = %s
+            SELECT m.msg_date, m.subject, m.content, u.email
+            FROM messages AS m
+            JOIN messages_users AS mu ON m.msg_id = mu.msg_id
+            JOIN users AS u ON u.user_id = mu.user_id
+            WHERE m.is_draft = FALSE AND m.user_id = %s
             ORDER BY msg_date DESC;
         """
     elif filter == 'read':
         statement = """
-            SELECT m.msg_date, m.subject, m.content
-            FROM receivers_messages AS rm
-            JOIN messages AS m ON m.msg_id = rm.msg_id
-            JOIN receivers AS r ON r.msg_id = m.msg_id
-            WHERE rm.user_id = %s AND r.is_read = TRUE
-            ORDER BY m.msg_date DESC;
+            SELECT m.msg_date, m.subject, m.content, u.email
+            FROM messages AS m
+            JOIN messages_users AS mu ON m.msg_id = mu.msg_id
+            JOIN users AS u ON u.user_id = mu.user_id
+            JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
+            WHERE d.is_read = TRUE AND m.user_id = %s
+            ORDER BY msg_date DESC;
         """
     elif filter == 'replied':
         statement = """
-            SELECT m.msg_date, m.subject, m.content
-            FROM receivers_messages AS rm
-            JOIN messages AS m ON m.msg_id = rm.msg_id
-            JOIN receivers AS r ON r.msg_id = m.msg_id
-            WHERE rm.user_id = %s AND r.is_replied = TRUE
-            ORDER BY m.msg_date DESC;
+            SELECT m.msg_date, m.subject, m.content, u.email
+            FROM messages AS m
+            JOIN messages_users AS mu ON m.msg_id = mu.msg_id
+            JOIN users AS u ON u.user_id = mu.user_id
+            JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
+            WHERE d.replied = TRUE AND m.user_id = %s
+            ORDER BY msg_date DESC;
         """
     elif filter == 'trashed':
         statement = """
-            SELECT m.msg_date, m.subject, m.content
-            FROM receivers_messages AS rm
-            JOIN messages AS m ON m.msg_id = rm.msg_id
-            JOIN receivers AS r ON r.msg_id = m.msg_id
-            WHERE rm.user_id = %s AND r.is_trashed = TRUE
-            ORDER BY m.msg_date DESC;
+            SELECT m.msg_date, m.subject, m.content, u.email
+            FROM messages AS m
+            JOIN messages_users AS mu ON m.msg_id = mu.msg_id
+            JOIN users AS u ON u.user_id = mu.user_id
+            JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
+            WHERE d.trashed = TRUE AND m.user_id = %s
+            ORDER BY msg_date DESC;
         """
     elif filter == 'received':
         statement = """
             SELECT m.msg_date, m.subject, m.content, u.email
-            FROM messages_receivers AS mr
-            JOIN messages AS m ON m.msg_id = mr.msg_id
+            FROM messages AS m
+            JOIN messages_users AS mu ON mu.msg_id = m.msg_id
             JOIN users AS u ON u.user_id = m.user_id
-            WHERE mr.receiver_id = %s
+            WHERE m.is_draft = FALSE AND mu.user_id = %s
             ORDER BY m.msg_date DESC;
         """
     values = (jwt_token['user_id'],)
@@ -93,14 +100,31 @@ def filter_messages(filter: str):
 
         result = cur.fetchall()
         if result:
-            results = []
+            # Group messages by content
+            grouped_messages = {}
             for row in result:
-                results.append({
-                    'date': row[0],
-                    'subject': row[1],
-                    'content': row[2],
-                    'sender': row[3]
-                })
+                msg_date, subject, content, receiver = row
+                if content not in grouped_messages:
+                    grouped_messages[content] = {
+                        'date': msg_date,
+                        'subject': subject,
+                        'content': content,
+                        'receivers': []
+                    }
+                grouped_messages[content]['receivers'].append(receiver)
+
+            # Format the grouped messages for response
+            results = []
+            for content, message in grouped_messages.items():
+                results.append(
+                    {
+                        'date': message['date'],
+                        'subject': message['subject'],
+                        'content': message['content'],
+                        'receivers' if filter == 'sent' else 'sender' : message['receivers'] 
+                    }
+                )
+
             response = {'status': status_codes['success'], 'errors': None, 'results': results}
         else:
             raise Exception('No messages found')

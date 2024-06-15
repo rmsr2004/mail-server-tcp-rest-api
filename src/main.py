@@ -62,7 +62,7 @@ def delete_message_endpoint(message_id):
 
 if __name__ == '__main__':
     # set up logging
-    logging.basicConfig(filename='log_file.log')
+    logging.basicConfig(filename='../log_file.log')
     logger = logging.getLogger('logger')
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()

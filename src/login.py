@@ -15,11 +15,16 @@ def login():
     # Validate payload
     #
 
-    if 'email' not in payload:
-        response = {'status': status_codes['api_error'], 'errors': 'email is required!', 'results': None}
-        return response
-    if 'password' not in payload:
-        response = {'status': status_codes['api_error'], 'errors': 'password is required!', 'results': None}
+    # list to store errors
+    errors = []
+
+    required_fields = ['email', 'password']
+    for field in required_fields:
+        if field not in payload:
+            errors.append(f'{field} required\n')
+
+    if errors != []:
+        response = {'status': status_codes['api_error'], 'errors': "\n".join(errors), 'results': None}
         return response
     
     #
@@ -46,9 +51,7 @@ def login():
             if decrypted_password != payload['password']:
                 raise Exception('Invalid password!')
             
-            jwt_payload = {
-                'user_id': int(user_id)
-            }
+            jwt_payload = {'user_id': int(user_id)}
             jwt_token = jwt.encode(jwt_payload, secret_key, algorithm='HS256')
 
             logger.debug(f'PUT /mail/login - user {user_id} logged in')
@@ -60,11 +63,13 @@ def login():
             raise Exception('Invalid username or password!')
         
     except (Exception, psycopg2.DatabaseError) as error:
-        logger.error(f'PUT mail/login - error: {error}')
-        response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}
-
         # an error occurred, rollback
         conn.rollback()
+
+        logger.error(f'POST /email/send - error: {error}')
+
+        error = str(error).split('\n')[0]
+        response = {'status': status_codes['internal_error'], 'errors': error, 'results': None}
 
     finally:
         if conn is not None:
