@@ -170,6 +170,7 @@ def delete_message_endpoint(message_id):
 if __name__ == '__main__':
     if len(sys.argv) != 3:
         print('Usage: python main.py <ip> <port>')
+        sys.exit(1)
 
     # set up logging
     logger.setLevel(logging.DEBUG)
