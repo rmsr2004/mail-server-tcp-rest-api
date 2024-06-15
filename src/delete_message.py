@@ -32,11 +32,10 @@ def delete_message(message_id: str):
 
     # Query to verify if the user is the receiver of the message
     statement = """
-        SELECT r.user_id
-        FROM receivers AS r
-        JOIN receivers_messages AS rm ON r.receiver_id = rm.receiver_id
-        JOIN messages AS m ON m.msg_id = rm.msg_id
-        WHERE m.msg_id = %s AND r.trashed = TRUE;
+        SELECT mu.user_id
+        FROM messages_users AS mu
+        JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
+        WHERE d.trashed = TRUE AND mu.msg_id = %s;
     """
     values = (message_id,)
 
@@ -53,13 +52,11 @@ def delete_message(message_id: str):
         # Query to delete the message from messages table
         # and the receivers_messages table
         statement = """
-            DELETE FROM messages
-            WHERE msg_id = %s;
-            
-            DELETE FROM receivers_messages
-            WHERE msg_id = %s;
+            UPDATE details
+            SET deleted = TRUE
+            WHERE msg_id = %s AND user_id = %s;
         """
-        values = (message_id,)
+        values = (message_id, jwt_token['user_id'])
         cur.execute(statement, values)
 
         conn.commit()
