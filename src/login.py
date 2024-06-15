@@ -53,12 +53,13 @@ def login():
             
             jwt_payload = {'user_id': int(user_id)}
             jwt_token = jwt.encode(jwt_payload, secret_key, algorithm='HS256')
-
-            logger.debug(f'PUT /mail/login - user {user_id} logged in')
             
             response = {'status': status_codes['success'], 'errors': None, 'results': jwt_token}
 
             conn.commit()
+
+            logger.info(f'PUT /mail/login - user {user_id} logged in')
+
         else:
             raise Exception('Invalid username or password!')
         
