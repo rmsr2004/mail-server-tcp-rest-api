@@ -1,0 +1,15 @@
+{
+	"id": "04255d33-922d-4273-b7f2-b2b2eea4c7b1",
+	"name": "MAIL",
+	"values": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-06-15T20:44:11.562Z",
+	"_postman_exported_using": "Postman/10.24.26"
+}

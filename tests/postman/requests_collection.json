@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "d420d2cf-1ec4-4726-9a97-7eb836427327",
+		"name": "MAIL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33217538",
+		"_collection_link": "https://dbprojlei.postman.co/workspace/My-Workspace~b4e92ea3-5b16-4370-869d-e0a3e52a7788/collection/33217538-d420d2cf-1ec4-4726-9a97-7eb836427327?action=share&source=collection_link&creator=33217538"
+	},
+	"item": [
+		{
+			"name": "REGISTER",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Maria\",\n\t\"email\": \"maria@gmail.com\",\n\t\"password\": \"maria123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/mail/register"
+			},
+			"response": []
+		},
+		{
+			"name": "LOGIN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"token\", jsonData.results);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"irineu@gmail.com\",\n\t\"password\": \"irineu\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/mail/login"
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE DETAIL",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"details\": [\"read\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/mail/update/2"
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": "http://localhost:8080/mail/delete/14"
+			},
+			"response": []
+		},
+		{
+			"name": "HOME",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/mail/home"
+			},
+			"response": []
+		},
+		{
+			"name": "SEND",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"subject\": \"Boas\",\n\t\"receivers\": [\n\t\t\"rodrigomiguelsr2004@gmail.com\",\n\t\t\"irineu@gmail.com\",\n\t\t\"maria@gmail.com\"\n\t],\n\t\"content\": \"Hello!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/mail/send"
+			},
+			"response": []
+		},
+		{
+			"name": "FILTER",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/mail/filter/sent"
+			},
+			"response": []
+		}
+	]
+}
