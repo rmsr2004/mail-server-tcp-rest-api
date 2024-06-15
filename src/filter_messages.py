@@ -59,9 +59,9 @@ def filter_messages(filter: str):
             SELECT m.msg_date, m.subject, m.content, u.email
             FROM messages AS m
             JOIN messages_users AS mu ON m.msg_id = mu.msg_id
-            JOIN users AS u ON u.user_id = mu.user_id
+            JOIN users AS u ON u.user_id = m.user_id
             JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
-            WHERE d.is_read = TRUE AND m.user_id = %s
+            WHERE d.is_read = TRUE AND mu.user_id = %s
             ORDER BY msg_date DESC;
         """
     elif filter == 'replied':
@@ -69,9 +69,9 @@ def filter_messages(filter: str):
             SELECT m.msg_date, m.subject, m.content, u.email
             FROM messages AS m
             JOIN messages_users AS mu ON m.msg_id = mu.msg_id
-            JOIN users AS u ON u.user_id = mu.user_id
+            JOIN users AS u ON u.user_id = m.user_id
             JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
-            WHERE d.replied = TRUE AND m.user_id = %s
+            WHERE d.replied = TRUE AND mu.user_id = %s
             ORDER BY msg_date DESC;
         """
     elif filter == 'trashed':
@@ -79,9 +79,9 @@ def filter_messages(filter: str):
             SELECT m.msg_date, m.subject, m.content, u.email
             FROM messages AS m
             JOIN messages_users AS mu ON m.msg_id = mu.msg_id
-            JOIN users AS u ON u.user_id = mu.user_id
+            JOIN users AS u ON u.user_id = m.user_id
             JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
-            WHERE d.trashed = TRUE AND m.user_id = %s
+            WHERE d.trashed = TRUE AND mu.user_id = %s
             ORDER BY msg_date DESC;
         """
     elif filter == 'received':

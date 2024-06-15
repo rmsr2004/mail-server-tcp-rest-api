@@ -65,7 +65,6 @@ def update_message(message_id: str):
                 result = cur.fetchone()[0];
                 if not result:
                     raise Exception('Message not found')
-                
                 if result != jwt_token['user_id']:
                     raise Exception('Unauthorized')
                 
@@ -75,25 +74,26 @@ def update_message(message_id: str):
                     SET is_draft = NOT is_draft
                     WHERE msg_id = %s;
                 """
+                values = (message_id,)
+                cur.execute(statement, values)
             
             else:
                 # Query to check if the user is the recipient of the message
                 statement = """
                     SELECT mu.user_id
                     FROM messages_users AS mu
-                    JOIN users AS u ON u.user_id = mu.user_id
                     WHERE mu.msg_id = %s AND mu.user_id = %s;
                 """
                 values = (message_id, jwt_token['user_id'])
                 cur.execute(statement, values)
 
-                result = cur.fetchone();
+                result = cur.fetchone()[0];
                 if not result:
                     raise Exception('Message not found')
                 if result != jwt_token['user_id']:
                     raise Exception('Unauthorized')
                 
-                receiver_id = result[1]
+                receiver_id = result
                 
                 if detail == 'read':
                     # Query to update the message as read
@@ -105,13 +105,13 @@ def update_message(message_id: str):
                 elif detail == 'replied':
                     statement = """
                         UPDATE details
-                        SET is_replied = NOT is_replied
+                        SET replied = NOT replied
                         WHERE user_id = %s AND msg_id = %s;
                     """
                 elif detail == 'trashed':
                     statement = """
                         UPDATE details
-                        SET is_trashed = NOT is_trashed
+                        SET trashed = NOT trashed
                         WHERE user_id = %s AND msg_id = %s;
                     """
 
