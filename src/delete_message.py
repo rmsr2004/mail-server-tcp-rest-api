@@ -5,6 +5,12 @@ from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
 
+# ********************************************************************************************** #
+# This function deletes a message from the database. It first validates the Authorization header #
+# and then checks if the user is the receiver of the message. If the user is the receiver, the   #
+# message is deleted from the details table. If the user is not the receiver, the function       #
+# returns an error message. If the message is not found, the function returns an error message.  #
+# ********************************************************************************************** #
 def delete_message(message_id: str):
     logger.info(f'DELETE /mail/delete/{message_id}')
 
@@ -77,3 +83,5 @@ def delete_message(message_id: str):
             conn.close()
 
     return response
+
+# End of delete_message.py

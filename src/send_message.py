@@ -3,6 +3,13 @@ import psycopg2
 from globals import status_codes, config_vars, logger
 from validate_token import validate_token
 from db_connection import db_connection
+# ********************************************************************************************** #
+# This function sends a message to a list of receivers. It first validates the Authorization     #
+# header and then validates the payload. If the payload is invalid, the function returns an      #
+# error message. The function then queries the database to check if the receivers exist. If the  #
+# receivers do not exist, the function returns an error message. If the receivers exist, the     #
+# function inserts the message into the database and associates the message with the receivers.  #
+# ********************************************************************************************** #
 
 def send_message():
     logger.info('POST /email/send')
@@ -104,3 +111,5 @@ def send_message():
             conn.close()
             
     return response
+
+# End of send_message.py

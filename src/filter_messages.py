@@ -5,6 +5,13 @@ from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
 
+# ********************************************************************************************** #
+# This function filters messages based on the filter parameter. It first validates the filter    #
+# parameter and then validates the Authorization header. If the filter parameter is invalid, the #
+# function returns an error message. If the Authorization header is invalid, the function        #
+# returns an error message. The function then queries the database based on the filter parameter #
+# and returns the messages. If no messages are found, the function returns an error message.     #
+# ********************************************************************************************** #
 def filter_messages(filter: str):
     logger.info(f'GET /mail/filter/{filter}')
 

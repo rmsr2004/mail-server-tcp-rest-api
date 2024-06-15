@@ -5,6 +5,13 @@ from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
 
+# ********************************************************************************************** #
+# This function updates a message in the database. It first validates the Authorization header   #
+# and then validates the payload. If the payload is invalid, the function returns an error       #
+# message. The function then queries the database to check if the user is the sender or receiver #
+# of the message. If the user is the sender, the function updates the message as a draft. If the #
+# user is the receiver, the function updates the message as read, replied, or trashed.           #
+# ********************************************************************************************** #
 def update_message(message_id: str):
     logger.info(f'PUT /mail/update/{message_id}')
 
@@ -136,3 +143,5 @@ def update_message(message_id: str):
             conn.close()
 
     return response
+
+# End of update_message.py

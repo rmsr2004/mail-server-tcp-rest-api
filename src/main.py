@@ -1,3 +1,4 @@
+import sys
 import flask
 import logging
 from globals import config_vars, logger
@@ -162,31 +163,36 @@ def delete_message_endpoint(message_id):
     response = delete_message(message_id)
     return flask.jsonify(response)
 
+# ********************************************************************************************** #
+# This function starts the Flask server.                                                         #
+# The server will be available at http://argv[1]:argv[2]/mail/                                   #  
+# ********************************************************************************************** #
 if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print('Usage: python main.py <ip> <port>')
+
     # set up logging
     logger.setLevel(logging.DEBUG)
 
- # Remove todos os handlers existentes para evitar duplicação
     logger.handlers.clear()
 
-    # Criação do handler
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s [%(levelname)s]:  %(message)s', '%H:%M:%S')
     handler.setFormatter(formatter)
 
-    # Configurar o nível do handler baseado nas configurações
     if config_vars['debug']:
         handler.setLevel(logging.DEBUG)
     elif config_vars['log']:
         handler.setLevel(logging.INFO)
 
-    # Adicionar o handler ao logger se qualquer uma das condições for verdadeira
     if config_vars['debug'] or config_vars['log']:
         logger.addHandler(handler)
 
-    host = '127.0.0.1'
-    port = 8080
+    host = sys.argv[1]
+    port = int(sys.argv[2])
     app.run(host=host, debug=config_vars['debug'], threaded=True, port=port)
     
     if config_vars['log']:
         logger.info(f'API v1.0 online: http://{host}:{port}')
+
+# End of main.py

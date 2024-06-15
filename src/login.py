@@ -2,8 +2,14 @@ import jwt
 import psycopg2
 import flask
 from globals import status_codes, secret_key, config_vars, logger
-from db_connection import db_connection 
+from db_connection import db_connection
 
+# ********************************************************************************************** #
+# This function logs a user into the system. It first validates the payload and then queries the #
+# database to check if the user exists. If the user exists, the function checks if the password  #
+# is correct. If the password is correct, the function generates a JWT token and returns it. If  #
+# the user does not exist or the password is incorrect, the function returns an error message.   #
+# ********************************************************************************************** #
 def login():
     logger.info('PUT /mail/login')
 

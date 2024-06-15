@@ -1,7 +1,8 @@
 import psycopg2
-##
-##  Connect to the database
-##
+
+# ********************************************************************************************** #
+#  Connect to the database and disables autocommit                                               #
+# ********************************************************************************************** #
 def db_connection(config_vars):
     db = psycopg2.connect(
         user = config_vars['db_user'],
@@ -12,3 +13,5 @@ def db_connection(config_vars):
     )
     db.autocommit = False
     return db
+
+# End of db_connection.py

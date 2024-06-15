@@ -3,6 +3,12 @@ import flask
 from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 
+# ********************************************************************************************** #
+# This function registers a user in the database. It first validates the payload and then        #
+# inserts the user into the database. If the user is successfully inserted, the function         #
+# returns the userID. If the user is not successfully inserted, the function returns an error    #
+# message.                                                                                       #
+# ********************************************************************************************** #
 def register():
     logger.info('POST /mail/register')
 
