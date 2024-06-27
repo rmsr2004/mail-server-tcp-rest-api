@@ -58,6 +58,12 @@ def send_message():
     cur = conn.cursor()
 
     try:
+        # Query to set the isolation level
+        statement = """
+            BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;
+        """
+        cur.execute(statement)
+        
         # Queries to verify if the receivers emails exists in the database
         receivers_ids = []
         for receiver_email in receivers:

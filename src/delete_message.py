@@ -38,6 +38,8 @@ def delete_message(message_id: str):
 
     # Query to verify if the user is the receiver of the message
     statement = """
+        BEGIN TRANSACTION ISOLATION LEVEL READ COMMITED;
+        
         SELECT mu.user_id
         FROM messages_users AS mu
         JOIN details AS d ON (d.msg_id = mu.msg_id AND d.user_id = mu.user_id)
@@ -55,14 +57,15 @@ def delete_message(message_id: str):
         if result[0] != jwt_token['user_id']:
             raise Exception('Unauthorized')
 
-        # Query to delete the message from messages table
-        # and the receivers_messages table
+        # Query to lock the row and set delete attribute to TRUE
         statement = """
+            SELECT deleted FROM details WHERE msg_id = %s AND user_id = %s FOR UPDATE;
+
             UPDATE details
             SET deleted = TRUE
             WHERE msg_id = %s AND user_id = %s;
         """
-        values = (message_id, jwt_token['user_id'])
+        values = (message_id, jwt_token['user_id'], message_id, jwt_token['user_id'])
         cur.execute(statement, values)
 
         conn.commit()

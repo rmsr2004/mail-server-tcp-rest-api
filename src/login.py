@@ -41,9 +41,12 @@ def login():
     cur = conn.cursor()
     
     statement =  """
+        BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+        
         SELECT user_id, password AS decrypted_password
         FROM users
-        WHERE email = %s;
+        WHERE email = %s
+        FOR UPDATE;
     """
     values = (payload['email'],)
 

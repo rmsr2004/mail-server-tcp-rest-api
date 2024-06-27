@@ -103,6 +103,10 @@ def filter_messages(filter: str):
     values = (jwt_token['user_id'],)
 
     try:
+        # add isolation level to the transaction
+        statement = """
+            BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+        """ + statement
         cur.execute(statement, values)
 
         result = cur.fetchall()

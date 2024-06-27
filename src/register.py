@@ -41,6 +41,8 @@ def register():
 
     # query to insert the user
     statement = """
+        BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;
+        
         INSERT INTO users (name, email, password) VALUES (%s, %s, %s)
         RETURNING user_id;
     """

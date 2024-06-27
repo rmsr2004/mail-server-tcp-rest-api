@@ -58,6 +58,12 @@ def update_message(message_id: str):
     cur = conn.cursor()
     
     try:
+        # Query to set transaction isolation level
+        statement = """
+            BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;
+        """
+        cur.execute(statement)
+
         for detail in payload['details']:
             if detail == 'sent':
                 # Query to verify if the user is the sender of the message
