@@ -1,8 +1,10 @@
 import flask
 import psycopg2
+import traceback
 from globals import status_codes, config_vars, logger
 from validate_token import validate_token
 from db_connection import db_connection
+
 # ********************************************************************************************** #
 # This function sends a message to a list of receivers. It first validates the Authorization     #
 # header and then validates the payload. If the payload is invalid, the function returns an      #
@@ -10,7 +12,6 @@ from db_connection import db_connection
 # receivers do not exist, the function returns an error message. If the receivers exist, the     #
 # function inserts the message into the database and associates the message with the receivers.  #
 # ********************************************************************************************** #
-
 def send_message():
     logger.info('POST /email/send')
 
@@ -73,7 +74,7 @@ def send_message():
             values = (receiver_email,)
 
             cur.execute(statement, values)
-            receiver_id = cur.fetchone()[0]
+            receiver_id = cur.fetchone()
 
             if receiver_id is None:
                 raise Exception(f"Receiver email {receiver_email} not found")
@@ -106,8 +107,9 @@ def send_message():
     except (Exception, psycopg2.DatabaseError) as error:
         # an error occurred, rollback
         conn.rollback()
-
-        logger.error(f'POST /email/send - error: {error}')
+        
+        error_trace = traceback.format_exc()
+        logger.error(f'POST /email/send - error: {error_trace}')
 
         error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': error, 'results': None}

@@ -1,6 +1,7 @@
 import jwt
 import psycopg2
 import flask
+import traceback
 from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
@@ -76,7 +77,8 @@ def delete_message(message_id: str):
         # an error occurred
         conn.rollback()
 
-        logger.error(f'DELETE /mail/delete/{message_id} - error: {error}')
+        error_trace = traceback.format_exc()
+        logger.error(f'DELETE /mail/delete/{message_id} - error: {error_trace}')
         
         error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}

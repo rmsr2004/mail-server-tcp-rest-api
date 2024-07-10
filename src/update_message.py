@@ -1,6 +1,7 @@
 import jwt
 import psycopg2
 import flask
+import traceback
 from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
@@ -139,7 +140,8 @@ def update_message(message_id: str):
         # an error occurred, rollback
         conn.rollback()
 
-        logger.error(f'PUT /email/update/{message_id} - error: {error}')
+        error_trace = traceback.format_exc()
+        logger.error(f'PUT /email/update/{message_id} - error: {error_trace}')
 
         error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': error, 'results': None}

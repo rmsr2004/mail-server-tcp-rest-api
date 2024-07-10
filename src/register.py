@@ -1,5 +1,6 @@
 import psycopg2
 import flask
+import traceback
 from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 
@@ -63,7 +64,8 @@ def register():
         # an error occurred, rollback
         conn.rollback()
 
-        logger.error(f'POST /mail/register - error: {error}')
+        error_trace = traceback.format_exc()
+        logger.error(f'POST /mail/register - error: {error_trace}')
 
         error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}

@@ -1,6 +1,7 @@
 import jwt
 import psycopg2
 import flask
+import traceback
 from globals import status_codes, secret_key, config_vars, logger
 from db_connection import db_connection
 
@@ -76,7 +77,8 @@ def login():
         # an error occurred, rollback
         conn.rollback()
 
-        logger.error(f'POST /email/send - error: {error}')
+        error_trace = traceback.format_exc()
+        logger.error(f'POST /email/login - error: {error_trace}')
 
         error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': error, 'results': None}

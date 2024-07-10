@@ -1,6 +1,7 @@
 import jwt
 import psycopg2
 import flask
+import traceback
 from globals import status_codes, config_vars, logger
 from db_connection import db_connection
 from validate_token import validate_token
@@ -141,8 +142,10 @@ def filter_messages(filter: str):
             raise Exception('No messages found')
 
     except (Exception, psycopg2.DatabaseError) as error:
-        logger.error(f'GET /mail/filter/{filter} - error: {error}')
+        error_trace = traceback.format_exc()
+        logger.error(f'GET /mail/filter/{filter} - error: {error_trace}')
 
+        error = str(error).split('\n')[0]
         response = {'status': status_codes['internal_error'], 'errors': str(error), 'results': None}
 
     finally:
