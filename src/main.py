@@ -8,6 +8,7 @@ from send_message import send_message
 from filter_messages import filter_messages
 from update_message import update_message
 from delete_message import delete_message
+from logout import logout
 
 app = flask.Flask(__name__)
 
@@ -63,6 +64,21 @@ def register_endpoint():
 @app.route('/mail/login', methods=['PUT'])
 def login_endpoint():
     response = login()
+    return flask.jsonify(response)
+
+# ********************************************************************************************** #
+# This endpoint is used to logout a user in the system.                                          #
+# The request must be a PUT request.                                                             #
+# The response will be a JSON object with the following structure:                               #
+# {                                                                                              #
+#     "status": 200,                                                                             #
+#     "errors": null,                                                                            #
+#     "results": "Logged out successfully"                                                       #
+# }                                                                                              #
+# ********************************************************************************************** #
+@app.route('/mail/logout', methods=['PUT'])
+def logout_endpoint():
+    response = logout()
     return flask.jsonify(response)
 
 # ********************************************************************************************** #

@@ -1,4 +1,3 @@
-import jwt
 import psycopg2
 import flask
 import traceback

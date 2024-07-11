@@ -14,3 +14,6 @@ config_vars = read_config()  # Read the configuration file
 
 logging.basicConfig(filename='log_file.log')
 logger = logging.getLogger('logger')
+
+
+revoked_tokens = set()  # Set to store revoked tokens
