@@ -2,29 +2,11 @@
 	"info": {
 		"_postman_id": "d420d2cf-1ec4-4726-9a97-7eb836427327",
 		"name": "MAIL",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33217538",
 		"_collection_link": "https://dbprojlei.postman.co/workspace/My-Workspace~b4e92ea3-5b16-4370-869d-e0a3e52a7788/collection/33217538-d420d2cf-1ec4-4726-9a97-7eb836427327?action=share&source=collection_link&creator=33217538"
 	},
 	"item": [
-		{
-			"name": "REGISTER",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Maria\",\n\t\"email\": \"maria@gmail.com\",\n\t\"password\": \"maria123\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:8080/mail/register"
-			},
-			"response": []
-		},
 		{
 			"name": "LOGIN",
 			"event": [
@@ -45,19 +27,59 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"irineu@gmail.com\",\n\t\"password\": \"irineu\"\n}",
+					"raw": "{\n\t\"email\": \"rodrigomiguelsr2004@gmail.com\",\n\t\"password\": \"rodrigo6063\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/mail/login"
+				"url": {
+					"raw": "http://localhost:8080/mail/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"login"
+					]
+				}
 			},
 			"response": []
 		},
 		{
-			"name": "UPDATE DETAIL",
+			"name": "REGISTER",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Rodrigo\",\n\t\"email\": \"rodrigomiguelsr2004@gmail.com\",\n\t\"password\": \"rodrigo6063\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/mail/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LOGOUT",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -69,29 +91,25 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"details\": [\"read\"]\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/mail/update/2"
-			},
-			"response": []
-		},
-		{
-			"name": "DELETE",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{token}}",
-						"type": "text"
-					}
-				],
-				"url": "http://localhost:8080/mail/delete/14"
+				"url": {
+					"raw": "http://localhost:8080/mail/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"logout"
+					]
+				}
 			},
 			"response": []
 		},
@@ -118,13 +136,27 @@
 						}
 					}
 				},
-				"url": "http://localhost:8080/mail/home"
+				"url": {
+					"raw": "http://localhost:8080/mail/home",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"home"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "SEND",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -135,14 +167,88 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"subject\": \"Boas\",\n\t\"receivers\": [\n\t\t\"rodrigomiguelsr2004@gmail.com\",\n\t\t\"irineu@gmail.com\",\n\t\t\"maria@gmail.com\"\n\t],\n\t\"content\": \"Hello!\"\n}",
+					"raw": "{\n\t\"subject\": \"Boas\",\n\t\"receivers\": [\n\t\t\"rodrigomiguelsr2004@gmail.com\",\n\t\t\"irineu@gmail.com\"\n\t],\n\t\"content\": \"Hello!\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/mail/send"
+				"url": {
+					"raw": "http://localhost:8080/mail/send",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/mail/delete/14",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"delete",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UPDATE DETAIL",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"details\": [\"read\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/mail/update/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"update",
+						"2"
+					]
+				}
 			},
 			"response": []
 		},
@@ -169,7 +275,19 @@
 						}
 					}
 				},
-				"url": "http://localhost:8080/mail/filter/sent"
+				"url": {
+					"raw": "http://localhost:8080/mail/filter/sent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"mail",
+						"filter",
+						"sent"
+					]
+				}
 			},
 			"response": []
 		}
